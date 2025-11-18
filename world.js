@@ -1,32 +1,44 @@
-window.addEventListener("load", function () {
+// world.js
+
+window.addEventListener("DOMContentLoaded", function () {
     const lookupBtn = document.getElementById("lookup");
+    const lookupCitiesBtn = document.getElementById("lookup-cities");
     const countryInput = document.getElementById("country");
     const resultDiv = document.getElementById("result");
 
-    lookupBtn.addEventListener("click", function () {
-        // 1) Read value from text box
+    function sendRequest(type) {
         const country = countryInput.value.trim();
 
-        // 2) Build URL for world.php
-        let url = "world.php";
-        if (country !== "") {
-            url += "?country=" + encodeURIComponent(country);
-        }
+        // Build query string
+        const params = new URLSearchParams();
+        params.append("country", country);
+        params.append("lookup", type); // "country" or "cities"
 
-        // 3) Ajax request using XMLHttpRequest
         const xhr = new XMLHttpRequest();
+        xhr.open("GET", "world.php?" + params.toString(), true);
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    // 4) Put the PHP output into the result div
                     resultDiv.innerHTML = xhr.responseText;
                 } else {
-                    resultDiv.innerHTML = "Error: " + xhr.status;
+                    resultDiv.innerHTML =
+                        '<div class="message">Error loading data. Please try again.</div>';
                 }
             }
         };
 
-        xhr.open("GET", url, true);
         xhr.send();
+    }
+
+    // Lookup Country button
+    lookupBtn.addEventListener("click", function () {
+        sendRequest("country");
+    });
+
+    // Lookup Cities button
+    lookupCitiesBtn.addEventListener("click", function () {
+        sendRequest("cities");
     });
 });
+
