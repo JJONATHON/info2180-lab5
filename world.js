@@ -1,44 +1,37 @@
 // world.js
+window.addEventListener('DOMContentLoaded', () => {
+  const countryInput = document.getElementById('country');
+  const lookupCountryBtn = document.getElementById('lookup-country');
+  const lookupCitiesBtn = document.getElementById('lookup-cities');
+  const resultDiv = document.getElementById('result');
 
-window.addEventListener("DOMContentLoaded", function () {
-    const lookupBtn = document.getElementById("lookup");
-    const lookupCitiesBtn = document.getElementById("lookup-cities");
-    const countryInput = document.getElementById("country");
-    const resultDiv = document.getElementById("result");
+  function fetchData(type) {
+    const country = countryInput.value.trim();
+    let url = `world.php?country=${encodeURIComponent(country)}`;
 
-    function sendRequest(type) {
-        const country = countryInput.value.trim();
-
-        // Build query string
-        const params = new URLSearchParams();
-        params.append("country", country);
-        params.append("lookup", type); // "country" or "cities"
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "world.php?" + params.toString(), true);
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    resultDiv.innerHTML = xhr.responseText;
-                } else {
-                    resultDiv.innerHTML =
-                        '<div class="message">Error loading data. Please try again.</div>';
-                }
-            }
-        };
-
-        xhr.send();
+    if (type === 'cities') {
+      url += '&lookup=cities';
     }
 
-    // Lookup Country button
-    lookupBtn.addEventListener("click", function () {
-        sendRequest("country");
-    });
+    fetch(url)
+      .then(response => response.text())   // <-- IMPORTANT: text(), not json()
+      .then(html => {
+        resultDiv.innerHTML = html;
+      })
+      .catch(err => {
+        console.error('Fetch error:', err);
+        resultDiv.innerHTML = '<div class="message error">Error loading data. Please try again.</div>';
+      });
+  }
 
-    // Lookup Cities button
-    lookupCitiesBtn.addEventListener("click", function () {
-        sendRequest("cities");
-    });
+  lookupCountryBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    fetchData('country');
+  });
+
+  lookupCitiesBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    fetchData('cities');
+  });
 });
 
