@@ -224,6 +224,22 @@ body {
     border-bottom: none;
 }
 
+/* Add vertical column separators */
+table th, table td {
+  border-right: 1px solid rgba(0, 255, 255, 0.25); /* subtle aqua line */
+  padding: 12px;
+}
+
+/* Remove the border on the last column */
+table th:last-child,
+table td:last-child {
+  border-right: none;
+}
+
+table th, table td {
+  box-shadow: 1px 0 6px rgba(0, 255, 255, 0.15);
+}
+
 /* ===========================
    Message Styles (no results)
    =========================== */
